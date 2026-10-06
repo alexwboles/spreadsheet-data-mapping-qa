@@ -1,0 +1,27 @@
+TECHPARTNER SPREADSHEET CHECK - release candidate 0.2.0
+
+Windows 10/11 x64. Python is bundled; no terminal setup is required.
+Run the Setup application, then use the desktop shortcut.
+
+1. Export the original and migrated spreadsheets as CSV UTF-8 files.
+2. Choose both files using Browse.
+3. Enter the exact record ID column heading present in both files.
+4. Enter the notes heading if you want to check for multiline notes.
+5. Click Check files. Review the status and findings.
+6. Optionally save a JSON report for your records.
+
+Your source files are not changed. No network connection, account, or paid
+service is used. Reports may include customer data: keep them private.
+
+An empty file, missing ID, repeated heading, or malformed row cannot pass.
+Duplicate IDs, missing records and potentially lost values require review.
+IDs are compared ignoring case and repeated whitespace. This is a conservative
+screening tool, not a guarantee of correct field placement or a lossless migration.
+Always review the migrated data before replacing the original.
+
+Excel XLSX files are not supported directly; export CSV UTF-8 first.
+To remove the app use Windows Installed Apps. Your own CSVs and saved reports
+are not deleted by the uninstaller.
+
+This release candidate is not yet approved for sale. Installer, visual workflow,
+and clean-machine acceptance checks must be completed before customer delivery.

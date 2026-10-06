@@ -19,7 +19,7 @@ from typing import Iterable
 def normalize(value: object) -> str:
     """Normalize text for loss-detection comparisons."""
 
-    return re.sub(r"\s+", " ", str(value or "")).strip().casefold()
+    return re.sub(r"\s+", " ", "" if value is None else str(value)).strip().casefold()
 
 
 def flatten_notes(value: object) -> str:
@@ -67,6 +67,15 @@ def audit_rows(
 ) -> MappingAudit:
     """Compare source and destination records and return a review-ready audit."""
 
+    if not id_field.strip():
+        raise ValueError("Choose a record ID column.")
+    for label, rows in (("Source", source_rows), ("Destination", destination_rows)):
+        if not rows:
+            raise ValueError(f"{label} has no records; an empty file cannot pass validation.")
+        for number, row in enumerate(rows, start=2):
+            if id_field not in row or not normalize(row[id_field]):
+                raise ValueError(f"{label} row {number}: missing record ID in '{id_field}'.")
+
     source_ids = _ids(source_rows, id_field)
     destination_ids = _ids(destination_rows, id_field)
     source_counts = Counter(source_ids)
@@ -88,7 +97,7 @@ def audit_rows(
             value = normalize(raw_value)
             if field == id_field or not value:
                 continue
-            if value not in destination_text:
+            if not re.search(r"(?<!\w)" + re.escape(value) + r"(?!\w)", destination_text):
                 missing_values.append(f"{field}: {str(raw_value).strip()}")
         if missing_values:
             potential_loss[record_id] = missing_values
@@ -118,7 +127,18 @@ def audit_rows(
 
 def _read_csv(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
-        return list(csv.DictReader(handle))
+        reader = csv.DictReader(handle, strict=True)
+        headers = reader.fieldnames
+        if not headers or any(not name.strip() for name in headers):
+            raise ValueError("CSV must contain nonempty column headings.")
+        if len(set(headers)) != len(headers):
+            raise ValueError("CSV contains duplicate column headings.")
+        rows = []
+        for row in reader:
+            if None in row or any(value is None for value in row.values()):
+                raise ValueError(f"CSV line {reader.line_num}: wrong number of columns.")
+            rows.append(row)
+        return rows
 
 
 def main() -> int:
@@ -129,12 +149,16 @@ def main() -> int:
     parser.add_argument("--notes-field", default="Notes")
     args = parser.parse_args()
 
-    audit = audit_rows(
-        _read_csv(args.source),
-        _read_csv(args.destination),
-        id_field=args.id_field,
-        notes_field=args.notes_field,
-    )
+    try:
+        audit = audit_rows(
+            _read_csv(args.source),
+            _read_csv(args.destination),
+            id_field=args.id_field,
+            notes_field=args.notes_field,
+        )
+    except (ValueError, OSError, UnicodeError, csv.Error) as exc:
+        print(json.dumps({"passed": False, "error": str(exc)}, ensure_ascii=False))
+        return 2
     payload = asdict(audit) | {"passed": audit.passed}
     print(json.dumps(payload, indent=2, ensure_ascii=False))
     return 0 if audit.passed else 1

@@ -1,5 +1,18 @@
 # Spreadsheet Data-Mapping QA
 
+## Desktop interface (development version)
+
+`python desktop.py` opens a local file picker, exact column-name inputs,
+clear check status and a saveable JSON report. No network services are used.
+Customer-ready standalone packaging and visual acceptance testing are pending;
+this is not yet cleared for sale.
+
+Input must be UTF-8 CSV with unique, nonempty headings and consistent row
+widths. Both files must contain records and a nonblank ID on every row.
+Invalid input cannot produce a passing audit. Reports can contain source data;
+share them only with authorized recipients. This tool flags possible data loss,
+not correct semantic field placement. Human review remains required.
+
 A small, dependency-free Python utility for checking a human-reviewed
 spreadsheet migration before delivery. It does not guess where ambiguous text
 belongs. Instead, it creates a focused review queue for:
