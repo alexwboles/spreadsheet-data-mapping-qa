@@ -1,0 +1,11 @@
+{
+  "source_count": 2,
+  "destination_count": 2,
+  "duplicate_source_ids": [],
+  "duplicate_destination_ids": [],
+  "missing_destination_ids": [],
+  "unexpected_destination_ids": [],
+  "notes_with_line_breaks": [],
+  "potentially_lost_values": {},
+  "passed": true
+}

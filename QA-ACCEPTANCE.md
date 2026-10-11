@@ -16,6 +16,24 @@ Synthetic data only. Tested on Alex's existing Windows PC, not a clean machine.
   result immediately when the original-file input changed.
 - All 12 validation tests passed after the source change.
 
-Remaining customer-release checks: clean Windows machine, installer wizard,
-file-picker workflow, uninstall/reinstall, and full rebuilt pass/save regression.
+Additional acceptance checks completed in the next goal turn:
+
+- Migrated-file Browse opened the Windows picker; double-clicking migrated.csv
+  selected it and the rebuilt app displayed the expected passing two-record audit.
+- Rebuilt Save report wrote demo/qa-rebuilt-report.json with `passed: true` and
+  both counts equal to 2. Original and migrated CSV SHA256 hashes stayed unchanged.
+- Silent uninstall exited 0 and removed the app, desktop shortcut, and uninstall
+  registration. Source CSVs and saved reports remained present.
+- Visible installer welcome, installation, and completion screens worked;
+  reinstall restored the app, shortcut, and registration. Installed executable
+  hash matched the build again.
+- A synthetic in-memory 5,000-row, 30-column audit passed in 10.125 seconds on
+  this development PC. This is one measured workload, not a speed guarantee.
+
+Remaining downloadable-app release checks: clean Windows machine acceptance and
+review of bundled dependency notices before distribution. No clean Windows VM
+or Windows Sandbox executable was found in the available environment.
+
+The proposed reviewed CSV reconciliation service uses the locally installed
+tool and supplies a reviewed report, not a customer software installation.
 No public advertising or customer delivery was performed.
