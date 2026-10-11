@@ -1,0 +1,31 @@
+{
+  "source_count": 2,
+  "destination_count": 2,
+  "duplicate_source_ids": [],
+  "duplicate_destination_ids": [],
+  "missing_destination_ids": [],
+  "unexpected_destination_ids": [],
+  "notes_with_line_breaks": [],
+  "potentially_lost_values": {},
+  "checked_field_map": {
+    "Name": "Name",
+    "Notes": "Notes"
+  },
+  "field_mismatches": {
+    "1": [
+      {
+        "source_field": "Name",
+        "destination_field": "Name",
+        "expected": "Demo Customer",
+        "actual": "Follow up on Friday"
+      },
+      {
+        "source_field": "Notes",
+        "destination_field": "Notes",
+        "expected": "Follow up on Friday",
+        "actual": "Demo Customer"
+      }
+    ]
+  },
+  "passed": false
+}

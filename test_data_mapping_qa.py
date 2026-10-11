@@ -1,11 +1,85 @@
 import unittest
 import tempfile
+import json
+import subprocess
+import sys
 from pathlib import Path
 
-from data_mapping_qa import audit_rows, flatten_notes, normalize, _read_csv
+from data_mapping_qa import audit_rows, flatten_notes, normalize, _read_csv, read_field_map
+from desktop import validate_report_target
 
 
 class MappingQATests(unittest.TestCase):
+    def test_cli_reports_mapped_pass_and_swapped_failure(self):
+        project = Path(__file__).resolve().parent
+        source = project / "demo" / "original.csv"
+        before = source.read_bytes()
+        for filename, expected_exit in (("migrated.csv", 0), ("swapped-fields.csv", 1)):
+            run = subprocess.run([sys.executable, str(project / "data_mapping_qa.py"),
+                                  str(source), str(project / "demo" / filename),
+                                  "--id-field", "Record ID", "--field-map",
+                                  str(project / "demo" / "field-map.json")],
+                                 capture_output=True, text=True, check=False)
+            self.assertEqual(run.returncode, expected_exit, run.stderr)
+            payload = json.loads(run.stdout)
+            self.assertEqual(payload["passed"], expected_exit == 0)
+            self.assertEqual(payload["checked_field_map"], {"Name": "Name", "Notes": "Notes"})
+        self.assertEqual(before, source.read_bytes())
+
+    def test_explicit_map_file_cannot_silently_disable_checks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "map.json"
+            for value in ("null", "{}", "[]", '"Name"', "bad json", '{"Name":"Name","Name":"Notes"}'):
+                path.write_text(value, encoding="utf-8")
+                with self.subTest(value=value), self.assertRaises(ValueError):
+                    read_field_map(path)
+
+    def test_report_cannot_overwrite_source_via_hard_link(self):
+        import os
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.csv"
+            source.write_text("ID,Name\n1,Demo\n", encoding="utf-8")
+            alias = Path(directory) / "alias.json"
+            os.link(source, alias)
+            before = source.read_bytes()
+            for target in (source, alias):
+                with self.assertRaisesRegex(ValueError, "cannot be overwritten"):
+                    validate_report_target(target, [source])
+            self.assertEqual(before, source.read_bytes())
+            self.assertEqual(validate_report_target(Path(directory) / "report.json", [source]),
+                             Path(directory) / "report.json")
+
+    def test_mapped_fields_catch_swapped_values(self):
+        source = [{"ID": "1", "Name": "Demo", "Notes": "Call Friday"}]
+        destination = [{"ID": "1", "Name": "Call Friday", "Notes": "Demo"}]
+        audit = audit_rows(source, destination, id_field="ID",
+                           field_map={"Name": "Name", "Notes": "Notes"})
+        self.assertFalse(audit.passed)
+        self.assertEqual(len(audit.field_mismatches["1"]), 2)
+        self.assertEqual(audit.checked_field_map, {"Name": "Name", "Notes": "Notes"})
+
+    def test_mapped_fields_support_renamed_headers(self):
+        audit = audit_rows([{"ID": "1", "Name": "Demo"}],
+                           [{"ID": "1", "Full Name": "Demo"}], id_field="ID",
+                           field_map={"Name": "Full Name"})
+        self.assertTrue(audit.passed)
+
+    def test_mapped_fields_compare_exact_values_including_empty(self):
+        for expected, actual in (("", "new"), ("Demo", "demo"), ("0", ""), ("Ann", " Ann ")):
+            with self.subTest(expected=expected, actual=actual):
+                audit = audit_rows([{"ID": "1", "Name": expected}],
+                                   [{"ID": "1", "Name": actual}], id_field="ID",
+                                   field_map={"Name": "Name"})
+                self.assertFalse(audit.passed)
+
+    def test_invalid_maps_fail_before_comparison(self):
+        rows = [{"ID": "1", "Name": "Demo", "Notes": "Call"}]
+        for mapping in ({}, [], {"Name": 3}, {"": "Name"}, {"Absent": "Name"},
+                        {"Name": "Absent"}, {"Name": "Notes", "Notes": "Notes"},
+                        {"ID": "Name"}, {"Name": "ID"}):
+            with self.subTest(mapping=mapping), self.assertRaises(ValueError):
+                audit_rows(rows, rows, id_field="ID", field_map=mapping)
+
     def test_empty_files_cannot_pass(self):
         with self.assertRaisesRegex(ValueError, "no records"):
             audit_rows([], [], id_field="ID")

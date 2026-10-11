@@ -37,3 +37,23 @@ or Windows Sandbox executable was found in the available environment.
 The proposed reviewed CSV reconciliation service uses the locally installed
 tool and supplies a reviewed report, not a customer software installation.
 No public advertising or customer delivery was performed.
+
+## Release candidate 0.3.0 - mapped-field checks
+
+- Added explicit source/destination column maps with exact-value comparisons.
+  Swapped values are flagged even when all original words remain in the record.
+- Invalid/empty maps, duplicate JSON source keys, absent mapped headings,
+  repeated destination headings and mappings of the ID field are rejected.
+- Report target checks also protect source/map files through hard-link aliases.
+- All 19 tests passed, including subprocess CLI pass/failure and input preservation.
+- A 5,000-row, 29-mapped-field comparison passed in 0.716 seconds on this PC.
+- Final executable and installer rebuilt successfully. Installation exited 0,
+  registered version 0.3.0 and matched build/installed executable SHA256:
+  3A9CC54E4118C7892D02FB40CF5FDE888F4EB516306DD9E15A8DBDA7E1308BF2.
+- Installed app loaded field-map.json through its Browse picker and reported
+  two field mismatches for swapped-fields.csv. Save report generated
+  demo/qa-mapped-report.json with `passed: false`, counts 2/2 and both mismatches.
+- Selecting corrected migrated.csv cleared the stale report; Check files then
+  displayed mapped-field checks passed, no mismatches, and `passed: true`.
+
+Clean-machine and bundled-notice review remain pending for software distribution.

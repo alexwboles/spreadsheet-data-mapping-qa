@@ -1,4 +1,4 @@
-TECHPARTNER SPREADSHEET CHECK - release candidate 0.2.0
+TECHPARTNER SPREADSHEET CHECK - release candidate 0.3.0
 
 Windows 10/11 x64. Python is bundled; no terminal setup is required.
 Run the Setup application, then use the desktop shortcut.
@@ -7,16 +7,23 @@ Run the Setup application, then use the desktop shortcut.
 2. Choose both files using Browse.
 3. Enter the exact record ID column heading present in both files.
 4. Enter the notes heading if you want to check for multiline notes.
-5. Click Check files. Review the status and findings.
-6. Optionally save a JSON report for your records.
+5. Optionally choose a JSON field map to check exact values in agreed columns.
+   Example: {"Name": "Full Name", "Notes": "Comments"}
+   Headings must exist; record ID is not a mapped value field. Each destination
+   heading may appear only once. This does not support merged or split fields.
+6. Click Check files. Review the status and findings.
+7. Optionally save a JSON report for your records.
 
 Your source files are not changed. No network connection, account, or paid
 service is used. Reports may include customer data: keep them private.
 
 An empty file, missing ID, repeated heading, or malformed row cannot pass.
 Duplicate IDs, missing records and potentially lost values require review.
-IDs are compared ignoring case and repeated whitespace. This is a conservative
-screening tool, not a guarantee of correct field placement or a lossless migration.
+IDs are compared ignoring case and repeated whitespace. With a field map,
+values are compared exactly in the selected columns, including blanks and case.
+Without a map, values are searched across the destination record; field placement
+is not checked. Intentional conversions may be flagged for human review.
+This is a screening tool, not a guarantee of a lossless migration.
 Always review the migrated data before replacing the original.
 
 Excel XLSX files are not supported directly; export CSV UTF-8 first.

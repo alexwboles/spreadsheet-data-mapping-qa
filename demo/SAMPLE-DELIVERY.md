@@ -27,10 +27,17 @@ The matching migrated.csv includes both records. The tool produced the saved
 qa-rebuilt-report.json with counts 2 and 2 and `passed: true`.
 Manual comparison of both names and notes matches the original.
 
-The automated check ignores case and repeated whitespace and searches across
-destination fields. It does not independently prove correct field placement,
-case-sensitive identifiers, date conversions, or business meaning. Those require
-an agreed mapping and human review. The report records that scope explicitly.
+The optional field-map check compares exact values in the agreed columns.
+Without a map, the preservation scan ignores case and repeated whitespace and
+searches across destination fields. Record IDs still use normalized matching.
+Case-sensitive identifiers, date conversions, and business meaning require
+an agreed scope and human review.
+
+The swapped-fields.csv example retains all original text but exchanges Name
+and Notes for ID 1. With field-map.json the audit fails with two field mismatches;
+the earlier preservation scan alone would have passed it.
+The installed app saved the result in qa-mapped-report.json. After selecting
+the corrected migrated.csv, the installed mapped-field check passed.
 
 ## Delivery contents
 

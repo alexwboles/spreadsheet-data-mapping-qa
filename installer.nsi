@@ -19,7 +19,7 @@ Section
  CreateShortcut "$SMPROGRAMS\TechPartner Spreadsheet Check.lnk" "$INSTDIR\TechPartner-Spreadsheet-Check.exe"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\TechPartnerSpreadsheetCheck" "DisplayName" "TechPartner Spreadsheet Check"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\TechPartnerSpreadsheetCheck" "UninstallString" '"$INSTDIR\Uninstall.exe"'
- WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\TechPartnerSpreadsheetCheck" "DisplayVersion" "0.2.0"
+ WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\TechPartnerSpreadsheetCheck" "DisplayVersion" "0.3.0"
 SectionEnd
 Section "Uninstall"
  Delete "$INSTDIR\TechPartner-Spreadsheet-Check.exe"
