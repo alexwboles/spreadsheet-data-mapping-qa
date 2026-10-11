@@ -4,8 +4,9 @@
 
 `python desktop.py` opens a local file picker, exact column-name inputs,
 clear check status and a saveable JSON report. No network services are used.
-Customer-ready standalone packaging and visual acceptance testing are pending;
-this is not yet cleared for sale.
+The bundled Windows installer and installed core workflow have been checked
+on the development PC. See QA-ACCEPTANCE.md for evidence and remaining release
+checks. Clean-machine acceptance is pending; this is not yet cleared for sale.
 
 Input must be UTF-8 CSV with unique, nonempty headings and consistent row
 widths. Both files must contain records and a nonblank ID on every row.

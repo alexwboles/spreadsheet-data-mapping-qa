@@ -46,6 +46,9 @@ def main():
         nonlocal result
         result = None
         status.set("Inputs changed. Run the check again before saving.")
+        output.configure(state="normal")
+        output.delete("1.0", "end")
+        output.configure(state="disabled")
     for variable in [*paths, id_field, notes_field]:
         variable.trace_add("write", invalidate)
 
