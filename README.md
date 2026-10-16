@@ -61,3 +61,25 @@ headings are required and merged/split field mappings are not supported.
 The report records `checked_field_map` and `field_mismatches` so reviewers can
 see which fields were checked. Invalid maps cannot silently fall back to a pass.
 Report saving rejects input aliases, including hard links, as overwrite targets.
+
+## Review-branch report safety
+
+The desktop source now fingerprints source, destination and optional map files
+before/after checking, and verifies those versions again before replacing a
+report. Saved desktop reports include input basenames and SHA256 fingerprints
+(not full local paths) to identify the versions reviewed. An ordinary external
+edit at the same path invalidates saving, clears the stale display and requires
+a new check. This is change detection, not a filesystem lock against hostile
+concurrent edits.
+
+Saving writes and flushes a temporary file in the report's directory, then
+atomically replaces the destination. Serialization, flush and replacement
+failure tests preserve the previous report and clean the temporary file. Input
+and map overwrite protections still apply. Reports may contain source data;
+they must remain restricted to authorized recipients.
+
+All 30 source tests pass, including the actual desktop callbacks exercised with
+controlled test widgets (not a native window/picker test). These fixes are on a
+separate review branch; the existing Windows executable/installer has NOT been
+rebuilt or installed with them. Native GUI, rebuilt-package and clean-machine
+acceptance remain pending. No commercial readiness or payment is established.

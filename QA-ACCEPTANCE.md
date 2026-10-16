@@ -1,5 +1,30 @@
 # Windows acceptance checks - October 10, 2026
 
+## October 16 report-persistence source review
+
+Source review found direct destination truncation during report saving and no
+check for files edited externally at the same selected path after an audit.
+Added same-directory temporary write/flush/atomic replace, input version checks,
+and input SHA256/basename evidence in desktop reports. Stale results are cleared
+and cannot be saved after an ordinary input/map edit or removal.
+
+All 30 source tests pass: the previous 19 mapping/input-protection tests plus
+9 report persistence tests and 2 actual callback tests using controlled widget
+substitutes. Fault injection covers blocked replacement, failed flush, invalid
+JSON payload, changes before/during saving, removed inputs and changed maps.
+Previous reports and protected inputs remain unchanged; temporary files are
+cleaned in the exercised failure cases. Callback tests verify honest failure
+messages and clearing stale output. No native window was opened in these tests.
+
+These changes are on a separate GitHub review branch and have not been merged,
+rebuilt into the existing installer/executable or installed. Earlier native
+acceptance evidence below applies to the older build, not these new callbacks.
+Native/rebuilt-package, clean-machine and distribution checks remain pending.
+No advertising, client messages, customer records, paid calls or spending were
+used in this source QA. No sale or payment is verified.
+
+## Historical native checks for earlier builds
+
 Synthetic data only. Tested on Alex's existing Windows PC, not a clean machine.
 
 - Installer exited 0; installed executable, guide, uninstaller, desktop shortcut,

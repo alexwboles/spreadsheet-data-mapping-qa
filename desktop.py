@@ -7,15 +7,8 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 from data_mapping_qa import _read_csv, audit_rows, read_field_map
-
-
-def validate_report_target(target: Path, sources: list[Path]) -> Path:
-    target = target.resolve()
-    for source in sources:
-        source = source.resolve()
-        if target == source or (target.exists() and target.samefile(source)):
-            raise ValueError("Choose a different file; original spreadsheets cannot be overwritten.")
-    return target
+from report_io import (InputsChangedError, fingerprint_inputs, save_report_atomic,
+                       validate_report_target, verify_input_versions)
 
 
 def main():
@@ -60,10 +53,12 @@ def main():
     output = tk.Text(panel, wrap="word", height=12, state="disabled")
     output.pack(fill="both", expand=True)
     result = None
+    checked_fingerprints = None
 
     def invalidate(*_):
-        nonlocal result
+        nonlocal result, checked_fingerprints
         result = None
+        checked_fingerprints = None
         status.set("Inputs changed. Run the check again before saving.")
         output.configure(state="normal")
         output.delete("1.0", "end")
@@ -72,14 +67,24 @@ def main():
         variable.trace_add("write", invalidate)
 
     def check():
-        nonlocal result
+        nonlocal result, checked_fingerprints
         result = None
+        checked_fingerprints = None
         try:
             if not all(path.get().strip() for path in paths):
                 raise ValueError("Choose both CSV files first.")
+            input_paths = [Path(path.get()) for path in paths]
+            if map_path.get().strip():
+                input_paths.append(Path(map_path.get()))
+            before = fingerprint_inputs(input_paths)
             mapping = read_field_map(Path(map_path.get())) if map_path.get().strip() else None
             audit = audit_rows(*[_read_csv(Path(path.get())) for path in paths], id_field=id_field.get(), notes_field=notes_field.get(), field_map=mapping)
-            result = asdict(audit) | {"passed": audit.passed}
+            verify_input_versions(input_paths, before)
+            checked_fingerprints = before
+            result = asdict(audit) | {"passed": audit.passed, "input_files": [
+                {"role": role, "name": path.name, "sha256": before[str(path.resolve())]}
+                for role, path in zip(("source", "destination", "field_map"), input_paths)
+            ]}
             status.set(("Mapped-field checks passed — human review is still required." if mapping else "Preservation scan passed — field placement was not checked.") if audit.passed else "Review required — see findings below.")
             text = json.dumps(result, indent=2, ensure_ascii=False)
         except (ValueError, OSError, UnicodeError, csv.Error) as exc:
@@ -91,7 +96,7 @@ def main():
         output.configure(state="disabled")
 
     def save():
-        if result is None:
+        if result is None or checked_fingerprints is None:
             messagebox.showinfo("Run a check", "Complete a check before saving a report.")
             return
         filename = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON report", "*.json")])
@@ -100,9 +105,12 @@ def main():
                 protected_paths = [Path(path.get()) for path in paths]
                 if map_path.get().strip():
                     protected_paths.append(Path(map_path.get()))
-                target = validate_report_target(Path(filename), protected_paths)
-                target.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+                save_report_atomic(Path(filename), result, protected_paths, checked_fingerprints)
                 messagebox.showinfo("Report saved", "The report can contain source data. Share it only with authorized recipients.")
+            except InputsChangedError as exc:
+                invalidate()
+                status.set("Input file contents changed. Run the check again before saving.")
+                messagebox.showerror("Report not saved", str(exc))
             except (OSError, ValueError) as exc:
                 messagebox.showerror("Report not saved", str(exc))
 
