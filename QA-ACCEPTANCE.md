@@ -1,5 +1,24 @@
 # Windows acceptance checks - October 10, 2026
 
+## October 18 installer ownership review
+
+The previous installer copied its named files into an existing directory without
+checking ownership. The review-branch installer now rejects unmarked target
+folders, fixes its target despite `/D` overrides, and verifies both directory
+and product marker before uninstalling. Older unmarked installed versions are
+not overwritten; backing up reports and using their existing uninstaller is
+required before a future approved upgrade.
+
+Native NSIS QA uses a non-executable synthetic payload in a fresh directory
+under ignored `build/installer-qa`, with local QA-only shortcuts and no real
+Desktop/Start Menu or uninstall-registry writes. It verifies unowned-folder
+refusal with byte-for-byte preservation, a marked upgrade, missing/wrong marker
+uninstall refusal, foreign-directory uninstall refusal, ignored install-directory
+override, and preservation of an unrelated synthetic report on uninstall.
+This is installer-control-flow QA only, not a rebuilt-application acceptance
+test or a clean-machine test. No existing installed app was changed and no
+artifact was delivered or advertised. Full release checks remain pending.
+
 ## October 16 report-persistence source review
 
 Source review found direct destination truncation during report saving and no

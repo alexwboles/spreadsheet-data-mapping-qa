@@ -83,3 +83,23 @@ controlled test widgets (not a native window/picker test). These fixes are on a
 separate review branch; the existing Windows executable/installer has NOT been
 rebuilt or installed with them. Native GUI, rebuilt-package and clean-machine
 acceptance remain pending. No commercial readiness or payment is established.
+
+## Review-branch installer ownership protection
+
+The installer source now refuses an existing target folder without its product
+marker and ignores arbitrary command-line installation-directory overrides.
+Uninstall requires both the fixed application directory and matching marker;
+it removes only named app files and leaves unrelated reports intact. Older
+unmarked installations are deliberately not overwritten: preserve reports and
+use the previous version's uninstaller before a future approved upgrade.
+
+`test_installer_safety.py` is an opt-in native NSIS test. Set `NSIS_COMPILER` to
+an existing `makensis.exe` and run `python -m unittest test_installer_safety -v`.
+It compiles a QA-only installer with a **non-executable synthetic payload**,
+redirects installation and shortcuts into ignored `build/installer-qa`, skips
+real Desktop/Start Menu and uninstall-registry writes, and never runs the fake
+payload. The test covers unowned-folder refusal, owned upgrade, missing/wrong
+markers, directory overrides, and preserving an unrelated synthetic report.
+Artifacts remain in that QA directory for inspection. This does not rebuild,
+install, or validate the actual CSV application. The ordinary 30 source tests
+still run without NSIS; the installer test is skipped unless explicitly enabled.
