@@ -42,8 +42,9 @@ build inventory are adjacent to the executable.
 The new executable launched and displayed the known defective synthetic audit.
 Native Save As created parseable JSON with counts 4/5, passed:false and both
 swapped fields for ID1002. This smoke check does not transfer every earlier
-native acceptance result to this binary. Full pass/stale/error regression,
-an actual application installer and clean Windows machine testing remain pending.
+native acceptance result to this binary. The additional native checks below
+now cover passing output, stale-input refusal and malformed-map recovery.
+An actual application installer and clean Windows machine testing remain pending.
 No installed product was replaced or download published.
 
 Installer notice inclusion was then verified using existing NSIS 3.13 and a
@@ -53,3 +54,19 @@ also matched the saved manifest. Upgrade retained an unrelated customer-note
 fixture. Uninstall removed only the seven owned notice files and kept that note
 and an unrelated report. All 31 source/installer tests passed. These checks do
 not validate a customer application installer or establish release readiness.
+
+## Isolated executable follow-through
+
+The same unsigned executable (SHA256 above) passed a four-record comparison
+using copied synthetic CSVs and the agreed field map. Native Save As produced
+a valid JSON report with all three input hashes verified. Changing the migrated
+fixture at the same path then caused Save report to refuse the stale result,
+clear the old output and create no stale report. After restoring the fixture,
+a deliberately malformed map produced a failed-check message and could not be
+saved. Restoring the map and running Check files returned a valid passing result.
+All fixture bytes were restored and reverified; only the isolated app was closed.
+
+These are observed workflows on this development PC. They do not establish
+clean-machine installation, signed distribution or every possible native error
+path. The raw JSON syntax error remains a usability improvement to consider;
+it did not permit a false pass or a stale report.

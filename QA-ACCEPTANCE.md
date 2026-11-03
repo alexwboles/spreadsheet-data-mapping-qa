@@ -1,5 +1,26 @@
 # Windows acceptance checks - October 10, 2026
 
+## November 3 isolated executable follow-through
+
+Tested the isolated build with SHA256
+943b394b95419a0d236e2528e8d80ecf38828e3872508e9d94b368d058b41285,
+not the earlier November 2 binary. Native comparison passed four synthetic
+records and Save As wrote native-pass-isolated-20261103.json. Parsed report
+counts were 4/4 with passed:true and no field mismatches; all three saved input
+SHA256 values matched the selected fixtures.
+
+A controlled external edit to the selected migrated fixture then triggered
+Report not saved, cleared the previous output and left the designated stale
+report target absent. A malformed JSON mapping could not complete a new check
+and Save report refused it. Restoring the mapping and rerunning the check
+produced a valid passing result. All input fixtures were restored byte-for-byte
+and verified. Only the isolated review window was closed.
+
+This supplements the earlier observed defective-file audit/save on this same
+binary. It is not a clean-machine test, application installer acceptance, or
+proof of every possible error path. Native screenshots and parsed reports are
+retained locally; no customer data, distribution or installed app was involved.
+
 ## November 3 installer notice inventory
 
 Installer source now explicitly includes the five dependency notices, their
@@ -14,7 +35,7 @@ override checks continued to pass. All 31 source/installer tests passed.
 This test ran only in ignored build/installer-qa, with QA-local shortcuts and
 no actual Desktop/Start Menu or uninstall-registry writes. It did not build,
 install or publish a customer application installer. Clean-machine acceptance
-and full native acceptance of the new isolated executable remain open.
+and the actual application installer remain open.
 
 ## November 2 isolated native rebuild
 
