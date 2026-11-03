@@ -1,2 +1,2 @@
-# Preserve PDF bytes and cross-reference offsets on Windows checkouts.
-*.pdf binary
+# Preserve the exact upstream notice bytes recorded by notice-sources.json.
+third-party/* -text
