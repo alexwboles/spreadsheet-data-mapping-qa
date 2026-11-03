@@ -1,5 +1,39 @@
 # Windows acceptance checks - October 10, 2026
 
+## November 2 isolated native rebuild
+
+Built the review-branch desktop app with the already installed Python 3.11.9
+and PyInstaller 6.22.3, without downloading dependencies or replacing the
+installed product. Candidate:
+`build/native-review-20261102/artifacts/TechPartner-Spreadsheet-Check-Review.exe`.
+SHA256: `D90622B404D7CBBD918AB76B30F7CC0DF680126C26027B1E2FB0F55D0E415BE8`.
+The build includes the fingerprinted/atomic report-saving source. All 30
+core, persistence and controlled desktop-callback tests pass under this exact
+Python interpreter. The native build process completed normally.
+
+The compiled executable launched its own window. Using copied synthetic CSVs
+and the exact field map, the native Check files button correctly displayed
+Review required, source/destination counts 4/5, duplicate 1001, missing 1003
+and unexpected 1999. The native Save report button opened the expected Windows
+Save As dialog. No customer files were selected or modified.
+
+Report saving, complete native mismatch evidence, corrected recheck and stale
+input refusal were NOT verified: the Windows automation helper could see but
+could not activate the Save As dialog. A refreshed exact-window recovery also
+failed, so native input stopped. Only the exact-path isolated review processes
+were closed afterward; the preexisting installed application was not targeted.
+No success is inferred from opening the dialog or from callback unit tests.
+
+Observed usability follow-up: Save As starts in the launcher's current folder,
+which may be an application/runtime folder. A future change should offer the
+selected CSV's directory and a sensible report name, then verify that behavior
+in the actual dialog. The app has not been changed for that follow-up yet.
+
+The candidate remains local and unsigned. It has not been installed, published,
+emailed or cleared for sale. Full native saving/recovery, clean-recipient setup,
+bundled dependency notices and commercial-delivery acceptance remain open.
+No spending, paid API calls, client records or verified sale resulted from QA.
+
 ## October 18 installer ownership review
 
 The previous installer copied its named files into an existing directory without

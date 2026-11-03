@@ -79,9 +79,12 @@ and map overwrite protections still apply. Reports may contain source data;
 they must remain restricted to authorized recipients.
 
 All 30 source tests pass, including the actual desktop callbacks exercised with
-controlled test widgets (not a native window/picker test). These fixes are on a
-separate review branch; the existing Windows executable/installer has NOT been
-rebuilt or installed with them. Native GUI, rebuilt-package and clean-machine
+controlled test widgets (not a native window/picker test). A separate November 2
+review executable now includes these fixes and has launched and detected the
+known defective synthetic migration in its native interface. The older installed
+product and installer have not been replaced. Native report saving/recheck was
+blocked by a Windows automation activation failure; no successful save is
+claimed. See QA-ACCEPTANCE.md. Full native, rebuilt-package and clean-machine
 acceptance remain pending. No commercial readiness or payment is established.
 
 ## Review-branch installer ownership protection
