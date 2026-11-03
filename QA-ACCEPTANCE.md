@@ -1,5 +1,21 @@
 # Windows acceptance checks - October 10, 2026
 
+## November 3 installer notice inventory
+
+Installer source now explicitly includes the five dependency notices, their
+provenance manifest and README beside the installed application. The existing
+NSIS 3.13 compiler built a QA-only installer using a non-executable synthetic
+payload. A fresh install reproduced all seven files byte-for-byte; the five
+license SHA256 values matched the reviewed manifest. An owned upgrade retained
+an unrelated note in the notices folder. Uninstall removed only known notice
+files and retained the unrelated note and report. Ownership-marker and path
+override checks continued to pass. All 31 source/installer tests passed.
+
+This test ran only in ignored build/installer-qa, with QA-local shortcuts and
+no actual Desktop/Start Menu or uninstall-registry writes. It did not build,
+install or publish a customer application installer. Clean-machine acceptance
+and full native acceptance of the new isolated executable remain open.
+
 ## November 2 isolated native rebuild
 
 Built the review-branch desktop app with the already installed Python 3.11.9

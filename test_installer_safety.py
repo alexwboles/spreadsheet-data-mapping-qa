@@ -6,6 +6,8 @@ omit real Desktop/Start Menu shortcuts and Windows uninstall registry writes.
 The synthetic .exe is only compared as bytes, never launched. Artifacts remain
 for inspection; there is no recursive cleanup.
 """
+import hashlib
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -62,6 +64,22 @@ class InstallerSafetyTests(unittest.TestCase):
         self.target.rmdir()  # empty QA directory only; no recursive deletion
         self.assertEqual(self.run_setup(), 0)
         self.assertEqual(app.read_bytes(), self.payload.read_bytes())
+        notices = self.target / "third-party"
+        expected_notices = {
+            "README.txt", "notice-sources.json", "PYTHON-LICENSE.txt",
+            "TCL-LICENSE.txt", "TK-LICENSE.txt", "OPENSSL-LICENSE.txt",
+            "PYINSTALLER-COPYING.txt",
+        }
+        self.assertEqual({p.name for p in notices.iterdir()}, expected_notices)
+        for name in expected_notices:
+            self.assertEqual((notices / name).read_bytes(),
+                             (ROOT / "third-party" / name).read_bytes())
+        notice_manifest = json.loads((notices / "notice-sources.json").read_text())
+        for entry in notice_manifest["notices"]:
+            self.assertEqual(hashlib.sha256(
+                (notices / entry["file"]).read_bytes()).hexdigest(), entry["sha256"])
+        unrelated_notice = notices / "customer-note.txt"
+        unrelated_notice.write_bytes(b"SYNTHETIC CUSTOMER NOTE - KEEP")
         self.assertTrue((self.target / "qa-shortcuts" /
                          "TechPartner Spreadsheet Check.lnk").is_file())
         marker = self.target / "install-marker.ini"
@@ -93,10 +111,13 @@ class InstallerSafetyTests(unittest.TestCase):
 
         self.assertEqual(self.run_setup(), 0)  # owned upgrade
         self.assertEqual(sentinel.read_bytes(), b'{"synthetic":true}')
+        self.assertEqual(unrelated_notice.read_bytes(), b"SYNTHETIC CUSTOMER NOTE - KEEP")
         self.assertEqual(self.run_uninstall(), 0)
         self.assertFalse(app.exists())
         self.assertFalse(marker.exists())
         self.assertEqual(sentinel.read_bytes(), b'{"synthetic":true}')
+        self.assertEqual(unrelated_notice.read_bytes(), b"SYNTHETIC CUSTOMER NOTE - KEEP")
+        self.assertEqual({p.name for p in notices.iterdir()}, {"customer-note.txt"})
         self.assertFalse((self.target / "qa-shortcuts").exists())
 
 

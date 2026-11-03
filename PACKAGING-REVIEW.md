@@ -23,9 +23,11 @@ accepting it. Tests on one development PC do not prove clean-machine support.
 Output is an unsigned local review folder, not a published release or installer.
 Existing installed software and previous review packages remain available.
 Updating runtimes requires reviewing their notices and repeating package and
-native checks. The existing installer must be rebuilt to include readable
-notices before it is considered for distribution. Clean-machine acceptance and
-Alex's specific distribution approval remain required.
+native checks. Installer source explicitly includes the five notices, their
+provenance manifest and README. Uninstall removes only these known files and
+leaves unrelated files in that directory intact. Rebuild an actual installer
+from an accepted application artifact before considering distribution;
+clean-machine acceptance and Alex's specific distribution approval remain required.
 
 ## November 3 result
 
@@ -41,5 +43,13 @@ The new executable launched and displayed the known defective synthetic audit.
 Native Save As created parseable JSON with counts 4/5, passed:false and both
 swapped fields for ID1002. This smoke check does not transfer every earlier
 native acceptance result to this binary. Full pass/stale/error regression,
-installer notice inclusion and clean Windows machine testing remain pending.
+an actual application installer and clean Windows machine testing remain pending.
 No installed product was replaced or download published.
+
+Installer notice inclusion was then verified using existing NSIS 3.13 and a
+non-executable synthetic payload in an isolated QA directory. All seven readable
+notice/provenance files matched their source bytes; the five license hashes
+also matched the saved manifest. Upgrade retained an unrelated customer-note
+fixture. Uninstall removed only the seven owned notice files and kept that note
+and an unrelated report. All 31 source/installer tests passed. These checks do
+not validate a customer application installer or establish release readiness.

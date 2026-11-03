@@ -102,7 +102,8 @@ It compiles a QA-only installer with a **non-executable synthetic payload**,
 redirects installation and shortcuts into ignored `build/installer-qa`, skips
 real Desktop/Start Menu and uninstall-registry writes, and never runs the fake
 payload. The test covers unowned-folder refusal, owned upgrade, missing/wrong
-markers, directory overrides, and preserving an unrelated synthetic report.
+markers, directory overrides, exact dependency-notice bytes and hashes, and
+preserving unrelated synthetic reports and notes during upgrade/uninstall.
 Artifacts remain in that QA directory for inspection. This does not rebuild,
 install, or validate the actual CSV application. The ordinary 30 source tests
 still run without NSIS; the installer test is skipped unless explicitly enabled.

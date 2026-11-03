@@ -48,6 +48,17 @@ Section
  File /oname=TechPartner-Spreadsheet-Check.exe "${PAYLOAD_EXE}"
  File "USER-GUIDE.txt"
  IfErrors install_failed
+ SetOutPath "$INSTDIR\third-party"
+ ; Explicit inventory: do not sweep unrelated files into a customer package.
+ File "third-party\README.txt"
+ File "third-party\notice-sources.json"
+ File "third-party\PYTHON-LICENSE.txt"
+ File "third-party\TCL-LICENSE.txt"
+ File "third-party\TK-LICENSE.txt"
+ File "third-party\OPENSSL-LICENSE.txt"
+ File "third-party\PYINSTALLER-COPYING.txt"
+ IfErrors install_failed
+ SetOutPath "$INSTDIR"
  WriteINIStr "$INSTDIR\install-marker.ini" "Install" "Product" "${PRODUCT_ID}"
  WriteUninstaller "$INSTDIR\Uninstall.exe"
  !ifdef QA_ROOT
@@ -88,6 +99,14 @@ Section "Uninstall"
  ; Remove only known application files, never recurse or remove user reports.
  Delete "$INSTDIR\TechPartner-Spreadsheet-Check.exe"
  Delete "$INSTDIR\USER-GUIDE.txt"
+ Delete "$INSTDIR\third-party\README.txt"
+ Delete "$INSTDIR\third-party\notice-sources.json"
+ Delete "$INSTDIR\third-party\PYTHON-LICENSE.txt"
+ Delete "$INSTDIR\third-party\TCL-LICENSE.txt"
+ Delete "$INSTDIR\third-party\TK-LICENSE.txt"
+ Delete "$INSTDIR\third-party\OPENSSL-LICENSE.txt"
+ Delete "$INSTDIR\third-party\PYINSTALLER-COPYING.txt"
+ RMDir "$INSTDIR\third-party"
  Delete "$INSTDIR\install-marker.ini"
  Delete "$INSTDIR\Uninstall.exe"
  !ifdef QA_ROOT
