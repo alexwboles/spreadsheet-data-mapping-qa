@@ -1,5 +1,24 @@
 # Windows acceptance checks - October 10, 2026
 
+## November 3 actual-payload installation review
+
+Built normal-target and QA_ROOT installers from source
+490afe621bbd0a8dba1cf51bbc7d6f836984bf09 with existing NSIS 3.13 and the
+verified isolated application. Normal-target artifact SHA256:
+9ba9a8b27aaa01a0d06bd3a2393e1a387ee8ba05c66b10eaafb96f9275800d21.
+The normal-target installer was not run or distributed.
+
+Only the separate QA_ROOT installer was executed in a fresh ignored build
+directory. Setup returned zero; installed executable and seven notice files
+matched expected hashes. The exact installed QA executable opened its native
+interface and closed. Uninstall returned zero and removed known owned files
+while preserving the synthetic report and unrelated note. This adds actual-
+payload lifecycle evidence to the earlier synthetic-payload ownership tests.
+It is still a test on the development PC with an explicit QA target, not
+default-target or clean-machine acceptance. No existing app was replaced and
+no real desktop shortcuts, Start Menu entries or uninstall registry entries
+were written by the QA installer.
+
 ## November 3 isolated executable follow-through
 
 Tested the isolated build with SHA256
@@ -34,8 +53,8 @@ override checks continued to pass. All 31 source/installer tests passed.
 
 This test ran only in ignored build/installer-qa, with QA-local shortcuts and
 no actual Desktop/Start Menu or uninstall-registry writes. It did not build,
-install or publish a customer application installer. Clean-machine acceptance
-and the actual application installer remain open.
+install or publish a customer application installer. Later actual-payload QA
+is recorded above; clean-machine and normal-target acceptance remain open.
 
 ## November 2 isolated native rebuild
 

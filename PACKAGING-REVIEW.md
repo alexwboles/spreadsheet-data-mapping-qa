@@ -44,7 +44,8 @@ Native Save As created parseable JSON with counts 4/5, passed:false and both
 swapped fields for ID1002. This smoke check does not transfer every earlier
 native acceptance result to this binary. The additional native checks below
 now cover passing output, stale-input refusal and malformed-map recovery.
-An actual application installer and clean Windows machine testing remain pending.
+The actual-payload installer follow-through is recorded below. Clean Windows
+machine testing remains pending.
 No installed product was replaced or download published.
 
 Installer notice inclusion was then verified using existing NSIS 3.13 and a
@@ -70,3 +71,23 @@ These are observed workflows on this development PC. They do not establish
 clean-machine installation, signed distribution or every possible native error
 path. The raw JSON syntax error remains a usability improvement to consider;
 it did not permit a false pass or a stale report.
+
+## Actual-payload installer review
+
+Existing NSIS 3.13 compiled two unsigned review installers from the verified
+application executable and installer source at
+490afe621bbd0a8dba1cf51bbc7d6f836984bf09. Output is local and ignored:
+build/application-installer-review-a35ea54e. The normal-target review installer
+SHA256 is 9ba9a8b27aaa01a0d06bd3a2393e1a387ee8ba05c66b10eaafb96f9275800d21.
+It was compiled but NOT run or distributed.
+
+A separate installer compiled with QA_ROOT installed the actual application
+only under that build folder, with QA-local shortcuts and no production
+uninstall-registry writes. Setup exited zero. The installed executable hash
+matched the accepted payload and all seven readable notice files matched source.
+The exact installed QA app reached its native interface and was closed.
+The QA uninstaller exited zero, removed owned application/notice/shortcut files,
+and preserved a synthetic report plus an unrelated note in the notices folder.
+Local review-manifest.json and qa-result.json retain artifact identities and
+results. The test does not prove default-target installation, upgrades of an
+existing user install, clean-machine support or commercial distribution approval.
