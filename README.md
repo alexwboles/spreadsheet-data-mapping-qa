@@ -82,9 +82,9 @@ All 30 source tests pass, including the actual desktop callbacks exercised with
 controlled test widgets (not a native window/picker test). A separate November 2
 review executable now includes these fixes and has launched and detected the
 known defective synthetic migration in its native interface. The older installed
-product and installer have not been replaced. Native report saving/recheck was
-blocked by a Windows automation activation failure; no successful save is
-claimed. See QA-ACCEPTANCE.md. Full native, rebuilt-package and clean-machine
+product and installer have not been replaced. Native report saving/recheck and stale-input refusal were verified on November 3
+using only synthetic fixtures. Saved failure and passing reports were parsed
+and checked against input fingerprints. See QA-ACCEPTANCE.md for the exact scope. See QA-ACCEPTANCE.md. Full native, rebuilt-package and clean-machine
 acceptance remain pending. No commercial readiness or payment is established.
 
 ## Review-branch installer ownership protection

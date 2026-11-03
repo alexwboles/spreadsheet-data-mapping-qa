@@ -135,3 +135,31 @@ No public advertising or customer delivery was performed.
   displayed mapped-field checks passed, no mismatches, and `passed: true`.
 
 Clean-machine and bundled-notice review remain pending for software distribution.
+
+## November 3 isolated native report verification
+
+Tested the November 2 unsigned review executable, SHA256
+D90622B404D7CBBD918AB76B30F7CC0DF680126C26027B1E2FB0F55D0E415BE8,
+on the existing development Windows PC. No installed product was replaced.
+
+- Synthetic source (4 rows) / defective destination (5 rows) plus explicit map
+  produced Review required. Native Save As completed and created parseable JSON.
+- Saved report contained duplicate ID 1001, missing ID 1003, unexpected ID 1999
+  and both swapped Name/Notes field mismatches for 1002; passed:false.
+- Changing to the corrected destination immediately cleared old output. Running
+  again displayed mapped-field checks passed; native Save As created a second
+  report with passed:true, counts 4/4 and no field mismatches.
+- Saved input basenames and SHA256 fingerprints matched the actual three files.
+- After the passing check, a controlled edit to the ignored corrected fixture
+  at the same path caused Report not saved / Input file contents changed.
+  Stale output was cleared and the proposed stale report did not exist.
+- Restored that synthetic fixture byte-for-byte from a test-only backup, then
+  verified all three input fingerprints matched the passing report again.
+
+The prior automation activation blocker is resolved for this workflow. File
+picker accessibility actions were incomplete, but visible-coordinate entry and
+keyboard confirmation worked. No client records, emails, payments or network
+services were used. This does not establish clean-machine acceptance, rebuilt
+installer readiness, signed binaries or completed dependency-notice review.
+Software distribution is still not approved as sale-ready. The separately
+reviewed export-report service does not require distributing this executable.
