@@ -3,6 +3,10 @@
 All records are invented. This is a reproducible sample, not customer work,
 a testimonial, a full migration certification or evidence of a sale.
 
+**See the buyer-facing deliverable:** [one-page sample findings report](sample-findings-report.pdf).
+It shows the evidence, owner actions, corrected recheck and exact input hashes
+using only the invented records below. No app installation is needed to read it.
+
 ## What the buyer receives
 
 A human-reviewed findings summary, machine-readable audit, the agreed field
@@ -49,6 +53,14 @@ verifies expected defects, corrected results, saved JSON and unchanged input
 hashes. Reports go to ignored build/synthetic-service-delivery. Reruns replace
 only those two named synthetic reports using the tested atomic report writer.
 Each report records the checked input basenames and SHA256 hashes.
+
+To rebuild the PDF documentation, use Python with the optional ReportLab
+package and run `python demo/service-workflow/build_sample_report.py`. It first
+reruns the synthetic acceptance workflow and then writes
+`output/pdf/sample-findings-report.pdf`. ReportLab is a documentation dependency;
+the comparison tool and normal synthetic runner remain dependency-free. Render
+and inspect the complete PDF after any content or layout change before replacing
+the committed sample. Do not run this publisher on customer records.
 
 For a real engagement, obtain approved scope, mapping, transfer channel and
 retention terms before receiving records. Reports can contain input values;

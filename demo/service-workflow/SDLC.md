@@ -49,6 +49,28 @@ must name the exact inputs checked and disclose unresolved issues.
 
 ## Verification record — November 2, 2026
 
+### Buyer-facing PDF addition
+
+The additional requirement is a readable one-page sample that a prospective
+buyer can understand without reading source code or JSON. A documentation-only
+ReportLab script reruns the existing bundled synthetic acceptance workflow and
+renders its verified findings, corrective actions, recheck, limitations and
+input hashes. It never accepts customer input paths. ReportLab is optional for
+documentation generation, not a new runtime dependency of the audit software.
+
+Acceptance: inspect the rendered page for readability/overlap, extract its text
+to verify the exact findings and all initial/corrected input fingerprints, and
+confirm no private local paths or customer data are published. Commit the PDF
+with its generator and update this demo's entry link. This is sample collateral,
+not a new customer review, testimonial, paid engagement or software release.
+
+The final PDF was rendered with Poppler and the complete page visually reviewed:
+one page, readable findings/actions, no overlap or clipping. Independent text
+checks confirmed all four defect types, initial counts, corrected result and
+the actual SHA256 hashes of all four fixture/map files. Text geometry stayed
+within page bounds, and no private local paths were included. The unchanged
+synthetic workflow verified both audits, persisted JSON and original input bytes.
+
 The synthetic workflow ran successfully: the first audit reported the expected
 duplicate 1001, missing 1003, unexpected 1999 and both swapped fields for 1002.
 The corrected four-record audit passed. Both saved reports matched the checked
