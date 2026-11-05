@@ -106,6 +106,35 @@ class DesktopCallbackTests(unittest.TestCase):
                 self.assertIn("Report not saved", messages[-1])
                 self.assertFalse(any(message[0] == "Report saved" for message in messages))
 
+    def test_readable_export_invalid_map_recovery_and_stale_refusal(self):
+        with tempfile.TemporaryDirectory(prefix="spreadsheet-readable-qa-") as directory:
+            root = Path(directory)
+            source, destination, report, mapping = [root / name for name in
+                ("source.csv", "destination.csv", "report.html", "map.json")]
+            for file in (source, destination):
+                file.write_text("Record ID,Name\n1,Synthetic\n", encoding="utf-8")
+            mapping.write_text('{"Name":', encoding="utf-8")
+            variables, commands, messages, output, picker, alerts = self.build_test_ui(source, destination, report)
+            variables[4].set(str(mapping))
+            with patch.multiple(desktop, filedialog=picker, messagebox=alerts):
+                commands["Check files"]()
+                self.assertIn("Field map is not valid JSON at line 1", output.text)
+                commands["Save readable report…"]()
+                self.assertIn("Run a check", messages[-1])
+                self.assertFalse(report.exists())
+                mapping.write_text('{"Name":"Name"}', encoding="utf-8")
+                commands["Check files"]()
+                self.assertIn("Mapped-field checks passed", output.text)
+                self.assertNotIn('"passed":', output.text)
+                commands["Save readable report…"]()
+                saved = report.read_bytes()
+                self.assertIn(b"Human review pending", saved)
+                destination.write_text("Record ID,Name\n1,Changed\n", encoding="utf-8")
+                commands["Save readable report…"]()
+                self.assertEqual(report.read_bytes(), saved)
+                self.assertIn("Report not saved", messages[-1])
+                self.assertEqual(output.text, "")
+
 
 if __name__ == "__main__":
     unittest.main()

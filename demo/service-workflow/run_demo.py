@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 from data_mapping_qa import _read_csv, audit_rows, read_field_map
 from report_io import fingerprint_inputs, save_report_atomic, verify_input_versions
+from readable_report import html_report
 
 
 def require(condition: bool, message: str) -> None:
@@ -45,6 +46,7 @@ def main() -> None:
         else:
             require(audit.destination_count == 4, "Corrected fixture count changed")
         payload = asdict(audit) | {"passed": audit.passed, "synthetic": True,
+                    "id_field": "Record ID", "notes_field": "Activity",
                     "input_files": [{"role": role, "name": path.name,
                                      "sha256": versions[str(path.resolve())]}
                                     for role, path in zip(("source", "destination", "field_map"), paths)]}
@@ -52,6 +54,10 @@ def main() -> None:
         save_report_atomic(target, payload, paths, versions)
         require(json.loads(target.read_text(encoding="utf-8")) == payload,
                 "Saved report differs from checked results")
+        readable_target = output / f"{name}-report.html"
+        save_report_atomic(readable_target, payload, paths, versions, render=html_report)
+        require(readable_target.read_text(encoding="utf-8") == html_report(payload),
+                "Readable report differs from checked results")
         print(f"{name}: {'PASS' if audit.passed else 'REVIEW REQUIRED'}; "
               f"source={audit.source_count}, destination={audit.destination_count}; {target.name}")
     verify_input_versions(all_inputs, original_versions)

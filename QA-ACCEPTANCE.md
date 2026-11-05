@@ -1,5 +1,41 @@
 # Windows acceptance checks - October 10, 2026
 
+## November 5 readable findings and export
+
+Requirements: make the current audit understandable without reading JSON,
+provide an offline report suitable for human review, preserve JSON consumers
+and the existing atomic-save/input-protection behavior. Render the existing
+audit rather than recalculate or infer results. Escape every spreadsheet value
+in the HTML and load no scripts or external resources. This change adds no
+external services or application dependencies.
+
+Desktop results now show a plain-language findings list. Save readable report
+exports HTML with the exact field map, counts, specific findings, next actions,
+ID/notes settings and input basenames/SHA256 values. Reports say human review
+pending. Malformed map JSON now identifies the line/column and gives a valid
+mapping example and recovery instruction.
+
+`py -3.11 -m unittest -v` ran 35 tests: 34 passed and one optional NSIS test was
+skipped because NSIS_COMPILER was not supplied. New regressions exercise actual
+desktop callbacks for invalid-map recovery, readable export and stale refusal;
+HTML injection through IDs, headings, values and filenames; distinct defective,
+corrected and unmapped decisions; and atomic HTML saving with replacement
+failure, input-overwrite refusal and changed input. Earlier JSON tests passed.
+
+`py -3.11 demo/service-workflow/run_demo.py` verified defective and corrected
+JSON/HTML reports and unchanged synthetic inputs. The isolated local HTTP
+preview returned 200. Browser control and its connection check timed out, so
+rendered desktop/mobile, print and native Save As acceptance remain unverified
+for this change. A browser reconnection request is pending. No customer data,
+installer publication, message or paid service was used.
+
+Existing CPython/PyInstaller tools also built an isolated unsigned review
+executable at build/isolated-review-jnlilean/package. SHA256:
+97efcc8252757391353d32de640417dccce2eb220f94d2f1b281fef48aee5985.
+The builder accepted all 13 binary origins and five embedded dependency
+notices. This is build evidence only. The new executable has not been launched,
+installed, visually accepted or distributed.
+
 ## November 3 actual-payload installation review
 
 Built normal-target and QA_ROOT installers from source

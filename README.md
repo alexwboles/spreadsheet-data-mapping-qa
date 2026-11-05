@@ -15,6 +15,19 @@ share them only with authorized recipients. An optional field map checks exact
 values in agreed destination columns. Without one, the preservation scan does
 not check field placement. Human review remains required.
 
+The review-branch desktop now displays a readable findings list. **Save readable
+report…** exports a standalone HTML report with counts, the agreed mapping,
+specific IDs and field differences, next actions and file fingerprints. Open
+the saved report in a browser and use Print if you need a paper copy. **Save
+report…** keeps the existing JSON export for further processing. Both formats
+use the same input protections and refuse stale results.
+
+Readable reports contain no scripts or external resources. Spreadsheet values
+are escaped as text. They can still contain private record values and require
+the same access restrictions as the original exports. Every report is labeled
+as awaiting human review. Visual/native acceptance of this November 5 source
+change remains open; see QA-ACCEPTANCE.md.
+
 A small, dependency-free Python utility for checking a human-reviewed
 spreadsheet migration before delivery. It does not guess where ambiguous text
 belongs. Instead, it creates a focused review queue for:

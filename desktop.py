@@ -1,12 +1,12 @@
 """Local-only file picker for the spreadsheet migration checker."""
 import csv
-import json
 import tkinter as tk
 from dataclasses import asdict
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 from data_mapping_qa import _read_csv, audit_rows, read_field_map
+from readable_report import html_report, text_report
 from report_io import (InputsChangedError, fingerprint_inputs, save_report_atomic,
                        validate_report_target, verify_input_versions)
 
@@ -81,12 +81,13 @@ def main():
             audit = audit_rows(*[_read_csv(Path(path.get())) for path in paths], id_field=id_field.get(), notes_field=notes_field.get(), field_map=mapping)
             verify_input_versions(input_paths, before)
             checked_fingerprints = before
-            result = asdict(audit) | {"passed": audit.passed, "input_files": [
+            result = asdict(audit) | {"passed": audit.passed, "id_field": id_field.get(),
+                                     "notes_field": notes_field.get(), "input_files": [
                 {"role": role, "name": path.name, "sha256": before[str(path.resolve())]}
                 for role, path in zip(("source", "destination", "field_map"), input_paths)
             ]}
             status.set(("Mapped-field checks passed — human review is still required." if mapping else "Preservation scan passed — field placement was not checked.") if audit.passed else "Review required — see findings below.")
-            text = json.dumps(result, indent=2, ensure_ascii=False)
+            text = text_report(result)
         except (ValueError, OSError, UnicodeError, csv.Error) as exc:
             status.set("Check could not complete. No files changed.")
             text = str(exc)
@@ -95,17 +96,20 @@ def main():
         output.insert("1.0", text)
         output.configure(state="disabled")
 
-    def save():
+    def save(readable=False):
         if result is None or checked_fingerprints is None:
             messagebox.showinfo("Run a check", "Complete a check before saving a report.")
             return
-        filename = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON report", "*.json")])
+        extension = ".html" if readable else ".json"
+        label = "Readable report" if readable else "JSON report"
+        filename = filedialog.asksaveasfilename(defaultextension=extension, filetypes=[(label, "*" + extension)])
         if filename:
             try:
                 protected_paths = [Path(path.get()) for path in paths]
                 if map_path.get().strip():
                     protected_paths.append(Path(map_path.get()))
-                save_report_atomic(Path(filename), result, protected_paths, checked_fingerprints)
+                save_report_atomic(Path(filename), result, protected_paths, checked_fingerprints,
+                                   render=html_report if readable else None)
                 messagebox.showinfo("Report saved", "The report can contain source data. Share it only with authorized recipients.")
             except InputsChangedError as exc:
                 invalidate()
@@ -118,6 +122,7 @@ def main():
     buttons.pack(fill="x", pady=12)
     ttk.Button(buttons, text="Check files", command=check).pack(side="left")
     ttk.Button(buttons, text="Save report…", command=save).pack(side="left", padx=10)
+    ttk.Button(buttons, text="Save readable report…", command=lambda: save(readable=True)).pack(side="left")
     ttk.Label(panel, text="With a field map, exact values are checked in the agreed columns. Other transformations and business meaning require review.", wraplength=700).pack(anchor="w")
     root.mainloop()
 

@@ -185,7 +185,14 @@ def read_field_map(path: Path) -> dict[str, str]:
                 raise ValueError(f"Field map repeats source heading '{heading}'.")
             result[heading] = destination
         return result
-    mapping = json.loads(path.read_text(encoding="utf-8-sig"), object_pairs_hook=unique_headings)
+    try:
+        mapping = json.loads(path.read_text(encoding="utf-8-sig"), object_pairs_hook=unique_headings)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Field map is not valid JSON at line {exc.lineno}, column {exc.colno}. "
+            'Use pairs of quoted headings, for example {"Name": "Full Name"}, '
+            "then choose the corrected map and run the check again."
+        ) from exc
     if not isinstance(mapping, dict) or not mapping:
         raise ValueError("Field map must be a nonempty JSON object of source and destination headings.")
     return mapping

@@ -6,6 +6,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
+from typing import Callable
 
 
 class InputsChangedError(ValueError):
@@ -43,7 +44,8 @@ def validate_report_target(target: Path, sources: list[Path]) -> Path:
 
 
 def save_report_atomic(target: Path, payload: dict, sources: list[Path],
-                       expected_fingerprints: dict[str, str]) -> Path:
+                       expected_fingerprints: dict[str, str], *,
+                       render: Callable[[dict], str] | None = None) -> Path:
     """Leave a previous report intact if serialization, writing or replacement fails.
 
     Checks detect ordinary external edits before and during save. They are not
@@ -52,7 +54,7 @@ def save_report_atomic(target: Path, payload: dict, sources: list[Path],
     """
     target = validate_report_target(target, sources)
     verify_input_versions(sources, expected_fingerprints)
-    text = json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False)
+    text = render(payload) if render else json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False)
     temporary: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n",

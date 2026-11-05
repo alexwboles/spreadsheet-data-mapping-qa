@@ -51,8 +51,15 @@ python demo/service-workflow/run_demo.py
 No packages, API keys, network calls or customer files are needed. The runner
 verifies expected defects, corrected results, saved JSON and unchanged input
 hashes. Reports go to ignored build/synthetic-service-delivery. Reruns replace
-only those two named synthetic reports using the tested atomic report writer.
+only the named JSON and HTML synthetic reports using the tested atomic report writer.
 Each report records the checked input basenames and SHA256 hashes.
+
+The runner also writes needs-review-report.html and corrected-report.html in
+the same output folder. These readable reports show the actual computed
+findings, mapping and file versions, with invented-data and human-review
+labels. Open either locally in a browser. Its content is escaped and the page
+loads no external resources. They are additional local review artifacts; the
+public one-page PDF above remains the previously verified sample.
 
 To rebuild the PDF documentation, use Python with the optional ReportLab
 package and run `python demo/service-workflow/build_sample_report.py`. It first
